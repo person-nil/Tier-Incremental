@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="./break_eternity.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+      body {
+        background-image: url("/Sources/Background2.png");
+        background-size: 50%;
+        background-repeat: repeat;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        font-family: monospace;
+        font-size: 4vw;
+        background-color: rgb(30, 30, 30); 
+        animation: mover 100000000s linear infinite;
+      }
+
+      @keyframes mover {
+        0% {
+          background-position: 0 0;
+        }
+        100% {
+          background-position: -1000000000% 1000000000%;
+        }
+      }
+
+      h1 {
+        font-family: monospace;
+        font-size: 1.9vw;
+      }
+
+      h2 {
+        font-family: monospace;
+      }
+
+      .tiers {
+        position: relative;
+        border: 0.5vw solid black;
+        border-radius: 1vw;
+        background-color: gray;
+        color: rgb(35, 35, 35);
+        width:17vw;
+        aspect-ratio: 1;
+        margin-bottom: -5vh;
+
+        transition: 0.2s;
+      }
+
+      .tiers:hover {
+        transform: scale(1.1);
+      }
+
+      .tiers:active {
+        transform: scale(0.9);
+      }
+
+      .auto {
+        position: relative;
+        border: 0.5vw solid black;
+        border-radius: 1vw;
+        background-color: gray;
+        color: rgb(40, 40, 40);
+        width:17vw;
+        aspect-ratio: 2;
+        margin-top: 7.5vh;
+
+        transition: 0.2s;
+      }
+
+      .auto:hover {
+        transform: scale(1.1);
+      }
+
+      .auto:active {
+        transform: scale(0.9);
+      }
+
+      .upgrades {
+        position: relative;
+        border: 0.5vw solid black;
+        border-radius: 1.25vw;
+        background-color: gray;
+        color: rgb(40, 40, 40);
+        width: 90vw;
+        aspect-ratio: 18;
+        margin-top: 7.5vh;
+
+        transition: 0.2s;
+      }
+
+      .upgrades:hover {
+        transform: scale(1.02);
+      }
+
+      .upgrades:active {
+        transform: scale(0.98);
+      }
+
+      .Asc {
+        position: relative;
+        border: 0.5vw solid rgb(77, 77, 77);
+        border-radius: 1vw;
+        background-color: rgb(229, 229, 229);
+        color: rgb(109, 109, 109);
+        width:30vw;
+        aspect-ratio: 3.5;
+        filter: brightness(0.35);
+
+        transition: 0.2s;
+      }
+
+      .Asc:hover {
+        transform: scale(1.1);
+      }
+
+      .Asc:active {
+        transform: scale(0.9);
+      }
+
+      .tab {
+        border: 0.4vw solid rgb(0, 0, 0);
+        border-radius: 0vw;
+        background-color: rgb(71, 71, 71);
+        color: rgb(24, 24, 24);
+        width: 16vw;
+        aspect-ratio: 4;
+        opacity: 0;
+        font-family: monospace;
+        font-size: 2vw;
+
+        transition: 0.4s;
+      }
+
+      .tab:hover {
+        background-color: rgb(106, 106, 106);
+      }
+
+      .tab:active {
+        border: 0.4vw solid rgb(64, 64, 64)
+      }
+    </style>
+
+    <script>
+      // variables
+
+      let cash = new Decimal(localStorage.getItem("Cash") || 0);
+
+      let asc = new Decimal(localStorage.getItem("Asc") || 0)
+      let points = new Decimal(localStorage.getItem("Points") || 0)
+
+      let tiers = {
+        [1]: new Decimal(localStorage.getItem("1") || 0),
+        [2]: new Decimal(localStorage.getItem("2") || 0),
+        [3]: new Decimal(localStorage.getItem("3") || 0),
+        [4]: new Decimal(localStorage.getItem("4") || 0),
+        [5]: new Decimal(localStorage.getItem("5") || 0)
+      }
+
+      let names = {
+        [1]:" Multi",
+        [2]:" Rebirth",
+        [3]:" Prestige",
+        [4]:" Divine",
+        [5]:" Transcension"
+      }
+
+      let colors = {
+        [1]:"rgb(128,0,0)",
+        [2]:"rgb(0,77,171)",
+        [3]:"rgb(45,0,90)",
+        [4]:"rgb(32,128,32)",
+        [5]:"rgb(0,110,200)"
+      }
+
+      let autotoggle = {
+        [1]:localStorage.getItem("a1") || "false",
+        [2]:localStorage.getItem("a2") || "false",
+        [3]:localStorage.getItem("a3") || "false",
+        [4]:localStorage.getItem("a4") || "false",
+        [5]:localStorage.getItem("a5") || "false"
+      }
+
+      let upg = {
+        [0]: new Decimal(localStorage.getItem("up0")) || 0,
+        [1]: new Decimal(localStorage.getItem("up1")) || 0,
+        [2]: new Decimal(localStorage.getItem("up2")) || 0,
+        [3]: new Decimal(localStorage.getItem("up3")) || 0,
+        [4]: new Decimal(localStorage.getItem("up4")) || 0,
+        [5]: new Decimal(localStorage.getItem("up5")) || 0
+      }
+    </script>
+  </head>
+  <body>
+  <div id="Main" style="margin-top: 0vh;">
+    <div style="display: flex; justify-content: space-around;">
+      <div style="width: 30vw; height: 5vh">
+        <button class="tab" id="upgrade"><b>Upgrades</b></button>
+        <button class="tab" id="upgrade"><b>Upgrades</b></button>
+      </div>
+      <h1 style="color: green; font-size: 3.25vw; text-align: center; margin-bottom: -1vh;" id="cashDisplay">Cash: 0</h1>
+      <div>
+        <h1 style="text-align: right; font-size: 2vw; width: 30vw; height: 5vh; color:gray; opacity: 0;" id="news">Tip: Each Stat Multiplies Cash By 2x</h1>
+      </div>
+    </div>
+    <h1 style="color: rgb(0, 94, 0); font-size: 1.75vw; text-align: center;" id="cashDisplaySec">Cash Per Sec: 1</h1>
+    <div style="display: flex; justify-content: space-around;">
+      <div><button class="tiers" id="1">loading</button><button class="auto" style="opacity: 0;" id="auto1"><h1>Auto: Off</h1></button></div>
+      <div><button class="tiers" id="2">loading</button><button class="auto" style="opacity: 0;" id="auto2"><h1>Auto: Off</h1></button></div>
+      <div><button class="tiers" id="3">loading</button><button class="auto" style="opacity: 0;" id="auto3"><h1>Auto: Off</h1></button></div>
+      <div><button class="tiers" id="4">loading</button><button class="auto" style="opacity: 0;" id="auto4"><h1>Auto: Off</h1></button></div>
+      <div><button class="tiers" id="5">loading</button><button class="auto" style="opacity: 0;" id="auto5"><h1>Auto: Off</h1></button></div>
+    </div>
+    <div style="display: flex; justify-content: center;">
+      <h1 style="color: rgb(182, 182, 182); font-size: 2.25vw; opacity: 0;" id="ascAmt">loading</h1>
+    </div>
+    <div style="display: flex; justify-content: center;">
+      <button class="Asc" id="asc"><h1>1 Transcension Required</h1></button>
+    </div>
+  </div> 
+
+  <div id="Upgrades" style="margin-top: -500vh;">
+    <div style="margin-left: 2vw;">
+      <button class="tab" id="main" style="opacity: 1;"><b>Main</b></button>
+    </div>
+    <div style="display: flex; justify-content: center;">
+      <h1 style="color: rgb(174, 174, 174); font-size: 3.5vw; text-align: center;" id="pointsDisplay">loading</h1>
+    </div>  
+    <div style="display: flex; justify-content: center;">
+      <button class="upgrades" id="up0"><h1>loading</h1></button>
+    </div>  
+    <div style="display: flex; justify-content: center;">
+      <button class="upgrades" id="up1"><h1>loading</h1></button>
+    </div>  
+    <div style="display: flex; justify-content: center;">
+      <button class="upgrades" id="up2"><h1>loading</h1></button>
+    </div>  
+    <div style="display: flex; justify-content: center;">
+      <button class="upgrades" id="up3"><h1>loading</h1></button>
+    </div>  
+    <div style="display: flex; justify-content: center;">
+      <button class="upgrades" id="up4"><h1>loading</h1></button>
+    </div>  
+    <div style="display: flex; justify-content: center;">
+      <button class="upgrades" id="up5"><h1>loading</h1></button>
+    </div>  
+
+  </div>
+  </body>
+
+  <script>
+    // functions
+
+    function calculate(tier) {
+      if (tier != 1) {
+        if (tier != 2) {
+          return tiers[tier].add(3)
+        } else {
+          let base = new Decimal(5)
+          let scalePer = new Decimal(1.2)
+          return base.mul(scalePer.pow(tiers[tier])).round()
+        }
+      } else {
+        let base = new Decimal(100)
+        let scalePer = new Decimal(1.35)
+        return base.mul(scalePer.pow(tiers[tier])).round()
+      }
+    }
+
+    function calcAsc() {
+      return cash.div(100).sqrt().pow(1.2).div(100)
+    }
+
+    function round(x) {
+      let y = "" + (x) + ""
+      if (y.substring(2, 3) != ".") {
+        return y.substring(0, 3)
+      } else {
+        return y.substring(0, 2)
+      }
+    }
+
+    function short(x) {
+      let s = x.log10().div(3).floor()
+      let suffixes = ["","K","M","B","T","Qd","Qn","Sx","Sp","Oc","No"]
+      let suf1 = ["","U","T","Qd","Qn","Sx","Sp","Oc","No"]
+      let suf2 = ["","De","Vg","Tg","Qg","Qng","Sg","Spg","Og","Ng"]
+
+      let digits = x.log10().div(3).sub(s).mul(3).floor()
+      let maxDigits = new Decimal(2)
+      let num = new Decimal(10)
+      let x2 = x.mul(num.pow(2)).div(num.pow(maxDigits.sub(digits)))
+      let num2 = x.log10().floor()
+      let start = x2.div(num.pow(num2)).mul(10).round().div(10)
+      if (s.gte(1)) {
+        if (s.lte(10)) {
+          return round(start.mul(10).round().div(10)) + suffixes[s]
+        } else {
+          s = s.sub(10)
+          if (x.lt(1e300)) {
+            return round(start.mul(10).round().div(10)) + suf1[s.div(10).sub(s.div(10).floor()).mul(10).sub(1).round()] + suf2[s.div(10).floor()]
+          } else {
+            return round(num.pow(x.log10().sub(x.log10().floor()))) + "e" + x.log10().floor()
+          }
+        }
+      } else {
+        return round(x)
+      }
+    }
+  </script>
+
+  <script>
+    // Main Script
+    function updater() {
+      let cashAdd = new Decimal(1)
+      for (var i=1; i <= 5; i++) {
+        cashAdd = cashAdd.mul(tiers[i].add(1))
+        if (autotoggle[i] == "true") {
+          if (i == 1) {
+            if (cash.gte(calculate(i))) {
+              cash = new Decimal(0)
+              tiers[i] = tiers[i].add(1)
+            }
+          } else {
+            if (tiers[i-1].gte(calculate(i))) {
+              tiers[i] = tiers[i].add(1)
+              for (var x=0; x < i; x++) {
+                if (x != 0) {
+                  tiers[x] = new Decimal(0)
+                } else {
+                  cash = new Decimal(0)
+                }
+              }
+            }
+          }
+        }
+        if (i != 1) {
+          document.getElementById(i).innerHTML = "<h1 style='color: " + colors[i] + "'>" + names[i] + "</h1><h2 style='color: " + colors[i-1] + "'>" + "Cost: " + short(calculate(i).add(0.01)) + names[i-1] + "</h2><h2 style='color: " + colors[i] + "'>" + short((tiers[i]).add(0.01)) + names[i] + "</h2>"
+          if (tiers[i-1].gte(calculate(i))) {
+            document.getElementById(i).style.filter = "brightness(1.25)"
+          } else {
+            document.getElementById(i).style.filter = "brightness(0.75)"
+          }
+        } else {
+          document.getElementById(i).innerHTML = "<h1 style='color: " + colors[i] + "'>" + names[i] + "</h1><h2 style='color: green'>" + short(calculate(i).add(0.01)) + " Cash</h2><h2 style='color: " + colors[i] + "'>" + short((tiers[i]).add(0.01)) + names[i] + "</h2>"
+          if (cash.gte(calculate(i))) {
+            document.getElementById(i).style.filter = "brightness(1.25)"
+          } else {
+            document.getElementById(i).style.filter = "brightness(0.75)"
+          }
+        }
+      }
+      cash = cash.add(cashAdd.mul(asc.add(1).mul(2).sub(1)))
+      document.getElementById("cashDisplay").innerHTML = "Cash: " + short(cash)
+      document.getElementById("cashDisplaySec").innerHTML = "Cash Per Sec: " + short(cashAdd.mul(50).mul(asc.add(1).mul(2).sub(1)))
+      document.getElementById("pointsDisplay").innerHTML = "Points: " + short(points.add(0.01))
+
+      if (asc.gt(0)) {
+        document.getElementById("upgrade").style.opacity = 1
+      } else {
+        document.getElementById("upgrade").style.opacity = 0
+      }
+
+      if (tiers[5].gte(1) || asc.gte(1)) {
+        if (tiers[5].gte(1)) {
+          document.getElementById("asc").style.filter = "brightness(0.7)"
+          document.getElementById("asc").innerHTML = "<h1> Ascend For +" + short(calcAsc().mul(upg[2].mul(0.1).add(1))) + " Ascension, +" + short(calcAsc().mul(1.8).pow(1.15).mul(upg[3].mul(0.2).add(1))) + " Points"
+        } else {
+          document.getElementById("asc").style.filter = "brightness(0.3)"
+          document.getElementById("asc").innerHTML = "<h1>1 Transcension Required</h1>"
+        }
+        document.getElementById("ascAmt").style.opacity = 1
+        document.getElementById("ascAmt").innerHTML = "You Have " + short(asc.add(0.01)) + " Ascensions (x" + short(asc.add(1).mul(2).sub(1)) + " Money)"
+
+        if (asc.gte(1)) {
+          document.getElementById("auto1").style.opacity = 1
+          document.getElementById("auto1").innerHTML = "<h1 style='color: rgb(128,0,0)'>Auto Multi: Off</h1>"
+        }
+        if (upg[4].gte(1)) {
+          document.getElementById("auto2").style.opacity = 1
+          document.getElementById("auto2").innerHTML = "<h1 style='color: rgb(0,77,171)'>Auto Rebirth: Off</h1>"
+        }
+        if (upg[5].gte(1)) {
+          document.getElementById("auto3").style.opacity = 1
+          document.getElementById("auto3").innerHTML = "<h1 style='color: rgb(0,77,171)'>Auto Prestige: Off</h1>"
+        }
+      }
+
+      for (var i=1; i <= 5; i++) {
+        if (document.getElementById("auto" + i).style.opacity == 1) {
+          let text = "Off"
+          if (autotoggle[i] == "true") {
+            document.getElementById("auto" + i).style.filter = "brightness(1.3)"
+            text = "On"
+          } else {
+            document.getElementById("auto" + i).style.filter = "brightness(0.9)"
+          }
+          document.getElementById("auto" + i).innerHTML = "<h1 style='color: " + colors[i] + "'>Auto " + names[i] + ": " + text + "</h1>"
+        }
+      }
+    }
+
+    setInterval(updater, 20)
+  </script>
+
+  <script>
+    // tips
+    function selectRandom() {
+      let texts = [
+        "Tip: Each Stat Multiplies Cash By 2x",
+        "There are more than 2 reset layers in this game ;)",
+        "The owner will probably never update, unless u like the game",
+        'There are 10 Stats currently',
+        "There may or may not be some secrets in this game",
+        "The dev rigged the console so u can't hack stats",
+        "Did you know... the dev made an ai just to generate 10 messages",
+        "The dev actually just used chatGPT",
+        "The previous message is wrong",
+        "The next message is wrong",
+        "This message is wrong",
+        "Why do some people just like numbers going up...",
+        "This game has big, big, big numbers, in a way",
+        "This is more of a grinding game than an incremental, but still fun",
+        "Why did the dev make me change every 10 seconds",
+        "Tip: AFK Ascension for way more Ascension, it scales slowly",
+        "Tip: get lots of ascension for OP boosts...",
+        "Updates each Friday!... next Friday!.... next Friday!..."
+      ]
+
+      let rand = Math.random()
+
+      document.getElementById("news").innerHTML = texts[Math.round(rand*17)]
+    }
+    setInterval(selectRandom, 10000)
+  </script>
+
+  <script>
+    // click events
+    function ontier(i) {
+      if (i != 1) {
+          if (tiers[i-1].gte(calculate(i))) {
+            tiers[i] = tiers[i].add(1)
+            for (var x=0; x < i; x++) {
+              if (x != 0) {
+                tiers[x] = new Decimal(0)
+              } else {
+                cash = new Decimal(0)
+              }
+            }
+          }
+        } else {
+          if (cash.gte(calculate(i))) {
+            tiers[i] = tiers[i].add(1)
+            cash = new Decimal(0)
+          }
+        }
+    }
+
+    document.getElementById(1).addEventListener("pointerdown", function() { ontier(1) } )
+    document.getElementById(2).addEventListener("pointerdown", function() { ontier(2) } )
+    document.getElementById(3).addEventListener("pointerdown", function() { ontier(3) } )
+    document.getElementById(4).addEventListener("pointerdown", function() { ontier(4) } )
+    document.getElementById(5).addEventListener("pointerdown", function() { ontier(5) } )
+
+    document.getElementById("asc").addEventListener("pointerup", function() {
+      if (tiers[5].gte(1)) {
+        asc = asc.add(calcAsc())
+        points = points.add(calcAsc().mul(1.8).pow(1.15))
+        for (var i=0;i <= 5; i++) {
+          tiers[i] = new Decimal(0)
+          cash = new Decimal(0)
+        }
+      }
+    })
+  </script>
+
+  <script>
+    // auto
+
+    function autobuytoggle(i) {
+      if (document.getElementById("auto" + i).style.opacity == 1) {
+        if (autotoggle[i] == "false") {
+          autotoggle[i] = "true"
+        } else {
+          autotoggle[i] = "false"
+        }
+      }
+    }
+
+    document.getElementById("auto" + 1).addEventListener("pointerdown", function() { autobuytoggle(1) } )
+    document.getElementById("auto" + 2).addEventListener("pointerdown", function() { autobuytoggle(2) } )
+    document.getElementById("auto" + 3).addEventListener("pointerdown", function() { autobuytoggle(3) } )
+    document.getElementById("auto" + 4).addEventListener("pointerdown", function() { autobuytoggle(4) } )
+    document.getElementById("auto" + 5).addEventListener("pointerdown", function() { autobuytoggle(5) } )
+  </script>
+
+  <script>
+    // tabs
+    let allTabs = [
+      "Main",
+      "Upgrades"
+    ]
+
+    function switchTab(name, buttonName) {
+      if (document.getElementById(buttonName).style.opacity == 0) { return NaN }
+      for (var i=0; i < 2; i++) {
+        if (allTabs[i] != name) {
+          document.getElementById(allTabs[i]).style.marginTop = "-500vh"
+        } else if (allTabs[i] != "Main") {
+          document.getElementById(allTabs[i]).style.marginTop = "400vh"
+        } else {
+          document.getElementById(allTabs[i]).style.marginTop = "0vh"
+        }
+      }
+    }
+
+    document.getElementById("upgrade").addEventListener("pointerup", function() { switchTab("Upgrades", "upgrade") })
+    document.getElementById("main").addEventListener("pointerup", function() { switchTab("Main", "main") })
+  </script>
+
+  <script>
+    // upgrades
+    let allup =  [
+      "Add +1 to the base of Money",
+      "Multiply Money by 1.5x each upgrade",
+      "Multiply Ascension by 1.1x each upgrade",
+      "Multiply Points by 1.2x each upgrade",
+      "Unlock auto Rebirth",
+      "Unlock auto Prestige",
+    ]
+
+    let costs = [
+      new Decimal(10),
+      new Decimal(30),
+      new Decimal(50),
+      new Decimal(60),
+      new Decimal(500),
+      new Decimal(8000)
+    ]
+
+    let upgMax = [
+      20,
+      10,
+      20,
+      25,
+      1,
+      1
+    ]
+
+    let upgScale = [
+      new Decimal(2.3),
+      new Decimal(3.8),
+      new Decimal(3.1),
+      new Decimal(2.7),
+      new Decimal(0),
+      new Decimal(0)
+    ]
+
+    function buyUp(i) {
+      let x = upg[i]
+      if (x.lt(upgMax[i])) {
+        let costing = costs[i].mul(upgScale[i].pow(x))
+        if (points.gte(costing)) {
+          upg[i] = upg[i].add(1)
+          points = points.sub(costing)
+          if (upg[i] < upgMax[i]) {
+            costing = costs[i].mul(upgScale[i].pow(upg[i]))
+            document.getElementById("up" + i).innerHTML = "<h1>" + allup[i] + " [" + short(costing) + " Points] " + upg[i] + "/" + upgMax[i]
+          } else {
+            document.getElementById("up" + i).innerHTML = "<h1>" + allup[i] + " [MAXED]"
+          }
+        }
+      } else {
+        document.getElementById("up" + i).innerHTML = "<h1>" + allup[i] + " [MAXED]"
+      }
+    }
+
+    for (var i=0;i <= 5;i++) {
+      if (upg[i] < upgMax[i]) {
+          let costing = costs[i].mul(upgScale[i].pow(upg[i]))
+          document.getElementById("up" + i).innerHTML = "<h1>" + allup[i] + " [" + short(costing) + " Points] " + upg[i] + "/" + upgMax[i]
+        } else {
+          document.getElementById("up" + i).innerHTML = "<h1>" + allup[i] + " [MAXED]"
+      }
+    }
+
+    document.getElementById("up" + 0).addEventListener("pointerup", function() { buyUp(0) })
+    document.getElementById("up" + 1).addEventListener("pointerup", function() { buyUp(1) })
+    document.getElementById("up" + 2).addEventListener("pointerup", function() { buyUp(2) })
+    document.getElementById("up" + 3).addEventListener("pointerup", function() { buyUp(3) })
+    document.getElementById("up" + 4).addEventListener("pointerup", function() { buyUp(4) })
+    document.getElementById("up" + 5).addEventListener("pointerup", function() { buyUp(5) })
+  </script>
+
+  <script>
+    // saving
+
+    function save() {
+      for (var i=1;i <= 5; i++) {
+        localStorage.setItem(i, tiers[i].toString())
+      }
+      for (var i=1;i <= 5; i++) {
+        localStorage.setItem("a" + i, autotoggle[i])
+      }
+      for (var i=0;i <= 5; i++) {
+        localStorage.setItem("up" + i, upg[i])
+      }
+      localStorage.setItem("Cash", cash.toString())
+      localStorage.setItem("Asc", asc.toString())
+      localStorage.setItem("Points", points.toString())
+    }
+
+    function resetStats() {
+      for (var i=1;i <= 5; i++) {
+        localStorage.setItem(i, 0)
+      }
+      for (var i=1;i <= 5; i++) {
+        localStorage.setItem("a" + i, "false")
+      }
+      for (var i=0;i <= 5; i++) {
+        localStorage.setItem("up" + i, 0)
+      }
+      localStorage.setItem("Cash", 0)
+      localStorage.setItem("Asc", 0)
+      localStorage.setItem("Points", 0)
+
+      for (var i=1;i <= 5; i++) {
+        tiers[i] = new Decimal(0)
+      }
+      for (var i=1;i <= 5; i++) {
+        autotoggle[i] = "false"
+      }
+      for (var i=0;i <= 5; i++) {
+        upg[i] = new Decimal(0)
+      }
+
+      cash = new Decimal(0)
+      asc = new Decimal(0)
+      points = new Decimal(0)
+    }
+
+    setInterval(save, 500)
+  </script>
+</html>
